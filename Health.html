@@ -1,0 +1,342 @@
+
+<!DOCTYPE html>
+<html lang="mn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Эрүүл амьдрал | Health Dashboard</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+:root {
+  --bg:#f4f6fc; --card:#fff; --text:#18213b; --muted:#8490a7;
+  --primary:#6558e8; --border:#edf0f7; --green:#16a779;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;font-family:Inter,"Segoe UI",sans-serif;color:var(--text);
+  background:radial-gradient(ellipse at 10% 0%,#e0e7ff 0,transparent 35%),
+  radial-gradient(ellipse at 95% 10%,#d1fae5 0,transparent 30%),var(--bg);
+  min-height:100vh
+}
+button,input,select{font:inherit}
+button{cursor:pointer}
+.layout{max-width:1440px;margin:auto;display:flex;min-height:100vh}
+.sidebar{width:245px;flex-shrink:0;padding:30px 18px;background:#ffffffa6;border-right:1px solid #fff;display:flex;flex-direction:column}
+.brand{display:flex;align-items:center;gap:12px;padding:0 8px 32px}
+.logo{width:45px;height:45px;border-radius:15px;background:linear-gradient(135deg,#6d5dfc,#8c6ff0);display:grid;place-items:center;color:white;font-size:23px;box-shadow:0 8px 20px #7869e83d}
+.brand h2{font-size:16px;margin:0 0 5px;font-weight:800}
+.brand p{font-size:11px;margin:0;color:var(--muted)}
+.nav-title{font-size:10px;color:#a2a9ba;letter-spacing:2px;font-weight:800;padding:12px}
+.nav button{width:100%;display:flex;align-items:center;gap:12px;padding:14px 13px;margin:4px 0;border:0;background:transparent;color:#77819a;border-radius:14px;text-align:left;font-size:13px;font-weight:600}
+.nav button.active,.nav button:hover{background:var(--primary);color:white;box-shadow:0 8px 18px #6558e833}
+.tip{margin-top:auto;border-radius:22px;padding:19px;background:linear-gradient(140deg,#6657e9,#8770ed);color:white}
+.tip .emoji{font-size:25px}.tip h3{font-size:14px;margin:14px 0 8px}.tip p{font-size:12px;line-height:1.7;color:#e5e2ff;margin:0}
+main{flex:1;min-width:0;padding:28px 35px 45px}
+.topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:26px}
+.eyebrow{font-size:12px;color:var(--muted);margin:0 0 6px}
+h1{font-size:25px;letter-spacing:-1px;margin:0;font-weight:800}
+.today{font-size:12px;background:#ffffffb8;border:1px solid white;padding:11px 14px;border-radius:30px;color:#66718a}
+.hero{position:relative;overflow:hidden;padding:32px;border-radius:27px;background:linear-gradient(115deg,#5145cf,#7464ed 65%,#9274ee);color:white;margin-bottom:23px;box-shadow:0 15px 35px #695be42a}
+.hero:after{content:"";position:absolute;width:250px;height:250px;border:35px solid #ffffff12;border-radius:50%;right:7%;top:-65px}
+.hero-tag{display:inline-block;background:#ffffff1c;border:1px solid #ffffff2c;padding:7px 11px;border-radius:30px;font-size:10px;font-weight:700;letter-spacing:1px}
+.hero h2{font-size:clamp(25px,3vw,37px);line-height:1.25;letter-spacing:-1px;margin:17px 0 10px;max-width:520px}
+.hero p{font-size:13px;line-height:1.8;color:#e3e1ff;max-width:480px;margin:0}
+.hero button{margin-top:21px;padding:12px 16px;border:0;border-radius:12px;background:white;color:#594bd8;font-size:12px;font-weight:800}
+.section-head{display:flex;justify-content:space-between;align-items:end;gap:12px;margin:27px 0 14px}
+.section-head h2{font-size:18px;margin:0;font-weight:800;letter-spacing:-.5px}
+.section-head p{font-size:12px;color:var(--muted);margin:6px 0 0}
+.grid{display:grid;gap:15px}
+.profile-grid{grid-template-columns:1fr 1fr;margin-bottom:20px}
+.card{background:#ffffffed;border:1px solid #ffffff;border-radius:23px;padding:21px;box-shadow:0 5px 22px #25335b08;min-width:0}
+.card-title{display:flex;align-items:center;gap:12px;margin-bottom:19px}
+.card-icon{width:42px;height:42px;border-radius:14px;display:grid;place-items:center;font-size:21px;flex-shrink:0}
+.card-title h3{font-size:14px;margin:0 0 5px;font-weight:800}
+.card-title p{font-size:11px;color:var(--muted);margin:0;line-height:1.5}
+.fields{display:grid;grid-template-columns:1fr 1fr;gap:13px}
+label{font-size:11px;color:#77819a;font-weight:600}
+.field{display:flex;align-items:center;border:1px solid #e8ebf3;border-radius:12px;margin-top:7px;padding:0 10px;background:#fff}
+.field input,.field select{width:100%;min-width:0;border:0;outline:0;padding:12px 0;background:transparent;color:var(--text);font-size:13px;font-weight:700}
+.field span{font-size:11px;color:#9ba4b7}
+.hint{font-size:10px;line-height:1.7;color:#9ba4b7;margin:14px 0 0}
+.bmi-number{font-size:47px;letter-spacing:-2px;font-weight:800}
+.pill{display:inline-block;border-radius:30px;background:#e9fbf3;color:#159c6c;padding:7px 10px;font-size:11px;font-weight:800;margin-left:10px}
+.bmi-track{display:flex;height:9px;border-radius:30px;overflow:hidden;margin:20px 0 9px;background:#eee}
+.bmi-track span:nth-child(1){background:#75baff;width:14%}.bmi-track span:nth-child(2){background:#43ce9b;width:26%}.bmi-track span:nth-child(3){background:#ffca69;width:24%}.bmi-track span:nth-child(4){background:#fa8585;flex:1}
+.bmi-labels{display:flex;justify-content:space-between;font-size:9px;color:#9ba4b7}
+.metrics{grid-template-columns:repeat(4,minmax(0,1fr))}
+.metric{padding:19px;transition:transform .2s,box-shadow .2s}
+.metric:hover{transform:translateY(-3px);box-shadow:0 12px 30px #25335b12}
+.metric-top{display:flex;justify-content:space-between;align-items:center}
+.metric-symbol{font-size:23px}
+.metric-label{font-size:11px;color:var(--muted);margin-top:20px}
+.metric-value{font-size:27px;font-weight:800;letter-spacing:-1px;margin-top:5px;overflow-wrap:anywhere}
+.metric-unit{font-size:11px;color:var(--muted);font-weight:500;letter-spacing:0}
+.metric-note{font-size:10px;color:#9ba4b7;line-height:1.6;margin-top:8px}
+.badge{font-size:9px;background:#e9fbf3;color:#159c6c;border-radius:20px;padding:5px 7px;font-weight:700}
+.lower-grid{grid-template-columns:1fr 1fr}
+.progress-track{height:9px;border-radius:20px;background:#eaf5fd;overflow:hidden;margin:18px 0}
+.progress-fill{height:100%;width:0;background:linear-gradient(90deg,#4cb8f5,#4a9bfa);border-radius:20px;transition:width .3s}
+.big-value{font-size:27px;font-weight:800;letter-spacing:-1px}
+.muted{font-size:11px;color:var(--muted)}
+.actions{display:flex;flex-wrap:wrap;gap:7px;margin-top:17px}
+.action{border:1px solid #dceefa;background:#f0f9ff;color:#2388bd;border-radius:10px;padding:10px 12px;font-size:11px;font-weight:700}
+.action:hover{background:#e1f3ff}
+.range{width:100%;accent-color:#1eb583;margin-top:23px}
+.exercise-box{background:#e9faf2;border-radius:15px;padding:14px;margin-top:16px;color:#15815d}
+.exercise-box strong{display:block;font-size:22px;margin-top:6px}
+.recommendations{display:grid;gap:10px}
+.recommendation{display:flex;gap:12px;padding:13px;border-radius:15px;background:#f8f9fc}
+.rec-emoji{font-size:22px}
+.rec-title{font-size:12px;font-weight:800;margin:1px 0 5px}
+.rec-desc{font-size:11px;color:#7e899e;line-height:1.7;margin:0}
+.vitamin{padding:14px;border-radius:15px;margin-bottom:10px}
+.vitamin h4{font-size:12px;margin:0 0 7px}
+.vitamin p{font-size:11px;line-height:1.8;margin:0}
+footer{border-top:1px solid #e5e9f2;padding:19px 0 0;margin-top:28px;text-align:center;font-size:10px;color:#a2a9ba;line-height:1.8}
+.mobile-nav{display:none}
+@media(max-width:1050px){.sidebar{width:205px}.metrics{grid-template-columns:repeat(2,minmax(0,1fr))}main{padding:25px}}
+@media(max-width:700px){
+ .sidebar{display:none}main{padding:19px 14px 100px}
+ .topbar{margin-bottom:20px}.topbar h1{font-size:21px}.today{font-size:10px;padding:9px}
+ .hero{padding:24px 20px;border-radius:23px}.hero:after{right:-120px}
+ .hero h2{font-size:28px}.hero p{font-size:12px}
+ .profile-grid,.lower-grid{grid-template-columns:1fr}
+ .metrics{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+ .card{padding:17px;border-radius:20px}.metric{padding:15px}
+ .metric-value{font-size:24px}.metric-label{margin-top:14px}
+ .section-head h2{font-size:16px}
+ .mobile-nav{display:flex;position:fixed;bottom:10px;left:10px;right:10px;z-index:5;background:#ffffffed;border:1px solid white;border-radius:19px;padding:8px 3px;box-shadow:0 8px 30px #1e2b501c;backdrop-filter:blur(15px);justify-content:space-around}
+ .mobile-nav button{display:flex;flex-direction:column;align-items:center;gap:5px;border:0;background:transparent;color:#8992a7;font-size:9px;padding:7px 4px;border-radius:11px}
+ .mobile-nav button.active{color:#6254df;background:#f0efff}
+ .mobile-nav .nav-emoji{font-size:18px}
+}
+@media(max-width:370px){.metrics{grid-template-columns:1fr}.fields{gap:9px}.hero h2{font-size:25px}}
+</style>
+</head>
+<body>
+<div class="layout">
+<aside class="sidebar">
+  <div class="brand"><div class="logo">♥</div><div><h2>Эрүүл амьдрал</h2><p>Өдөр бүр илүү эрүүл</p></div></div>
+  <div class="nav-title">ҮНДСЭН ЦЭС</div>
+  <nav class="nav" id="sideNav">
+    <button class="active" data-tab="overview">◈ Ерөнхий тойм</button>
+    <button data-tab="nutrition">🍎 Хооллолт</button>
+    <button data-tab="exercise">🏋️ Дасгал хөдөлгөөн</button>
+    <button data-tab="vitamins">✨ Витамин</button>
+    <button data-tab="hydration">💧 Усны хэрэглээ</button>
+  </nav>
+  <div class="tip"><div class="emoji">✦</div><h3>Жижиг алхам, том өөрчлөлт</h3><p>Өдөр бүр өөрийнхөө төлөө нэг сайн сонголт хийгээрэй.</p></div>
+</aside>
+
+<main>
+  <header class="topbar">
+    <div><p class="eyebrow">ТАНЫ ЭРҮҮЛ МЭНДИЙН ОРОН ЗАЙ</p><h1 id="pageTitle">Ерөнхий тойм</h1></div>
+    <div class="today">◷ &nbsp; Өнөөдрийн тойм</div>
+  </header>
+
+  <section class="hero">
+    <span class="hero-tag">✦ &nbsp; ТАНЫ ХУВИЙН ЭРҮҮЛ МЭНДИЙН ТӨЛӨВЛӨГӨӨ</span>
+    <h2>Өөртөө анхаарах нь<br>өнөөдрөөс эхэлнэ.</h2>
+    <p>Өдөр тутмын ус, хөдөлгөөн, хооллолтоо нэг дор хянаж, эрүүл зуршлаа бага багаар бүтээгээрэй.</p>
+    <button onclick="document.getElementById('profile').scrollIntoView({behavior:'smooth'})">Миний үзүүлэлтүүд &nbsp; →</button>
+  </section>
+
+  <div class="grid profile-grid" id="profile">
+    <section class="card">
+      <div class="card-title"><div class="card-icon" style="background:#f0efff;color:#6859df">♙</div><div><h3>Миний мэдээлэл</h3><p>Өөрийн үзүүлэлтүүдийг оруулна уу</p></div></div>
+      <div class="fields">
+        <label>Нас<div class="field"><input id="age" type="number" min="1" max="120" value="21"><span>нас</span></div></label>
+        <label>Хүйс<div class="field"><select id="gender"><option value="male">Эрэгтэй</option><option value="female">Эмэгтэй</option><option value="other">Бусад</option></select></div></label>
+        <label>Өндөр<div class="field"><input id="height" type="number" min="50" max="250" value="172"><span>см</span></div></label>
+        <label>Жин<div class="field"><input id="weight" type="number" min="10" max="400" value="78"><span>кг</span></div></label>
+      </div>
+      <p class="hint">Мэдээллээ өөрчлөхөд тооцооллууд автоматаар шинэчлэгдэнэ.</p>
+    </section>
+
+    <section class="card">
+      <div class="card-title"><div class="card-icon" style="background:#e8fbf2;color:#17a779">◉</div><div><h3>Биеийн жингийн индекс</h3><p>BMI · Өндөр ба жингийн харьцаа</p></div></div>
+      <div><span class="bmi-number" id="bmi">26.4</span><span class="pill" id="bmiStatus">Илүүдэл жин</span></div>
+      <div class="bmi-track"><span></span><span></span><span></span><span></span></div>
+      <div class="bmi-labels"><span>Жин багатай</span><span>Хэвийн</span><span>Илүүдэл</span><span>30+</span></div>
+      <p class="hint" id="bmiHint">BMI нь биеийн бүтцийг дангаараа бүрэн илэрхийлэхгүй.</p>
+    </section>
+  </div>
+
+  <div class="section-head"><div><h2>Өдрийн зорилтууд</h2><p>Таны мэдээлэлд үндэслэсэн ойролцоо тооцоо</p></div></div>
+  <div class="grid metrics">
+    <section class="card metric"><div class="metric-top"><span class="metric-symbol">💧</span><span class="badge">Өдрийн зорилт</span></div><div class="metric-label">Өдөрт уух ус</div><div class="metric-value"><span id="waterLiters">2.34</span> <span class="metric-unit">литр</span></div><p class="metric-note">Жин × 30 мл гэсэн энгийн тооцоо</p></section>
+    <section class="card metric"><div class="metric-top"><span class="metric-symbol">🚶</span><span class="badge">5,000 алхам</span></div><div class="metric-label">Алхалтын калори</div><div class="metric-value"><span id="calories">195</span> <span class="metric-unit">ккал</span></div><p class="metric-note">Биеийн жин болон алхалтаар ойролцоолсон</p></section>
+    <section class="card metric"><div class="metric-top"><span class="metric-symbol">🍎</span><span class="badge">Өдөр бүр</span></div><div class="metric-label">Хооллолт</div><div class="metric-value">Тэнцвэртэй</div><p class="metric-note">Ногоо, уураг, бүхэл үрийг хослуулаарай</p></section>
+    <section class="card metric"><div class="metric-top"><span class="metric-symbol">🏋️</span><span class="badge">Тогтмол</span></div><div class="metric-label">Хөдөлгөөн</div><div class="metric-value">30 мин</div><p class="metric-note">Өөрийн чадварт тохирсон хөдөлгөөн</p></section>
+  </div>
+
+  <div class="section-head"><div><h2>Өдөр тутмын хяналт</h2><p>Өөрийн зорилтоо тэмдэглээрэй</p></div></div>
+  <div class="grid lower-grid" id="hydrationSection">
+    <section class="card">
+      <div class="card-title"><div class="card-icon" style="background:#e9f7ff;color:#2699dc">💧</div><div><h3>Усны хэрэглээ</h3><p>Өдрийн усны зорилтоо хянах</p></div></div>
+      <div class="big-value"><span id="waterDrunk">0</span> <span class="muted">мл уусан</span></div>
+      <p class="muted">Зорилт: <strong id="waterGoal">2,340 мл</strong></p>
+      <div class="progress-track"><div class="progress-fill" id="waterProgress"></div></div>
+      <p class="muted" id="waterPercent">0% биелсэн</p>
+      <div class="actions">
+        <button class="action" onclick="addWater(250)">+ 250 мл</button>
+        <button class="action" onclick="addWater(350)">+ 350 мл</button>
+        <button class="action" onclick="addWater(500)">+ 500 мл</button>
+        <button class="action" onclick="resetWater()" style="background:#f7f8fb;color:#8992a7;border-color:#edf0f7">Тэглэх</button>
+      </div>
+      <p class="hint">Хэрэгцээ нь цаг агаар, хөдөлгөөн, хооллолт болон эрүүл мэндээс хамаарна.</p>
+    </section>
+    <section class="card" id="exerciseSection">
+      <div class="card-title"><div class="card-icon" style="background:#e8fbf2;color:#17a779">🚶</div><div><h3>Алхалтын зорилт</h3><p>Өдрийн хөдөлгөөнөө тохируулах</p></div></div>
+      <div class="big-value"><span id="stepValue">5,000</span> <span class="muted">алхам</span></div>
+      <p class="muted">Ойролцоогоор <span id="distance">3.5</span> км</p>
+      <input class="range" id="steps" type="range" min="0" max="15000" step="500" value="5000">
+      <div style="display:flex;justify-content:space-between" class="muted"><span>0 алхам</span><span>15,000 алхам</span></div>
+      <div class="exercise-box"><span style="font-size:11px">Тооцоолсон энерги зарцуулалт</span><strong><span id="stepCalories">195</span> ккал</strong><span style="font-size:10px">Бодит зарцуулалт ялгаатай байж болно.</span></div>
+    </section>
+  </div>
+
+  <div class="section-head" id="nutritionSection"><div><h2>Хооллолтын зөвлөмж</h2><p>Өдөр тутмын энгийн дадлууд</p></div></div>
+  <section class="card">
+    <div class="recommendations">
+      <div class="recommendation"><span class="rec-emoji">🥗</span><div><p class="rec-title">Ногоо, жимсээ нэмэх</p><p class="rec-desc">Хоол бүрт төрөл бүрийн ногоо, жимс оруулахыг хичээгээрэй.</p></div></div>
+      <div class="recommendation"><span class="rec-emoji">🥚</span><div><p class="rec-title">Уурагтай хүнс хэрэглэх</p><p class="rec-desc">Өндөг, загас, шош, мах, тараг зэрэг эх үүсвэрийг ээлжлэн сонго.</p></div></div>
+      <div class="recommendation"><span class="rec-emoji">🌾</span><div><p class="rec-title">Бүхэл үр ба эслэг</p><p class="rec-desc">Овьёос, бүхэл үрийн талх, буурцаг зэрэг хүнсийг хэрэглээрэй.</p></div></div>
+    </div>
+  </section>
+
+  <div class="section-head" id="vitaminsSection"><div><h2>Витамины ерөнхий зөвлөмж</h2><p>Нэмэлт бүтээгдэхүүнийг зөв сонгох</p></div></div>
+  <section class="card">
+    <div class="vitamin" style="background:#f0edff;color:#5d4bc8"><h4>☀️ D витамин</h4><p>Яс, булчингийн хэвийн үйл ажиллагаанд чухал. Хэрэгцээ нь нарны тусгал, хооллолт, наснаас хамаарна.</p></div>
+    <div class="vitamin" style="background:#eaf4ff;color:#376bb7"><h4>🌿 B12 витамин</h4><p>Мэдрэлийн тогтолцоо болон цусны эс үүсэхэд хэрэгтэй. Амьтны гаралтай хүнс хэрэглэдэггүй хүмүүс хэрэгцээгээ анхаарах нь зүйтэй.</p></div>
+    <p class="hint">Витамин хүн бүрд ижил хэмжээгээр шаардлагатай биш. Нэмэлт бүтээгдэхүүн, өндөр тунг эмчийн зөвлөгөөгүйгээр хэрэглэхээс зайлсхий.</p>
+  </section>
+
+  <footer>ЭРҮҮЛ АМЬДРАЛ · HEALTH DASHBOARD<br>Энэ сайт нь ерөнхий мэдээлэл, өөрийгөө хянахад зориулагдсан. Эмнэлгийн оношилгоо, эмчилгээний зөвлөгөөг орлохгүй.</footer>
+</main>
+</div>
+
+<nav class="mobile-nav">
+  <button class="active" data-jump="top"><span class="nav-emoji">◈</span>Ерөнхий</button>
+  <button data-jump="nutritionSection"><span class="nav-emoji">🍎</span>Хооллолт</button>
+  <button data-jump="exerciseSection"><span class="nav-emoji">🏋️</span>Дасгал</button>
+  <button data-jump="vitaminsSection"><span class="nav-emoji">✨</span>Витамин</button>
+  <button data-jump="hydrationSection"><span class="nav-emoji">💧</span>Ус</button>
+</nav>
+
+<script>
+const $ = (id) => document.getElementById(id);
+let waterDrunk = 0;
+
+function numberFormat(value) {
+  return new Intl.NumberFormat("en-US", {maximumFractionDigits:1}).format(value);
+}
+
+function updateHealth() {
+  const age = Number($("age").value);
+  const height = Number($("height").value);
+  const weight = Number($("weight").value);
+  const valid = age > 0 && height >= 50 && height <= 250 && weight >= 10 && weight <= 400;
+
+  if (!valid) {
+    $("bmi").textContent = "—";
+    $("bmiStatus").textContent = "Мэдээллээ шалгана уу";
+    $("waterLiters").textContent = "—";
+    $("calories").textContent = "—";
+    $("waterGoal").textContent = "—";
+    $("stepCalories").textContent = "—";
+    return;
+  }
+
+  const bmi = weight / ((height / 100) ** 2);
+  const water = weight * 30;
+  const steps = Number($("steps").value);
+  const calories = weight * steps * 0.0005;
+
+  $("bmi").textContent = bmi.toFixed(1);
+  let label = "Хэвийн жин";
+  let color = "#159c6c";
+  if (bmi < 18.5) { label = "Жин багатай"; color = "#c88720"; }
+  else if (bmi < 25) { label = "Хэвийн жин"; color = "#159c6c"; }
+  else if (bmi < 30) { label = "Илүүдэл жин"; color = "#c88720"; }
+  else { label = "Таргалалтын ангилал"; color = "#df5353"; }
+
+  if (age < 18) {
+    label = "Насны хүснэгт шаардлагатай";
+    color = "#7d6de0";
+    $("bmiHint").textContent = "18-аас доош насанд BMI-г нас, хүйстэй харьцуулсан тусгай хүснэгтээр үнэлдэг.";
+  } else {
+    $("bmiHint").textContent = "BMI нь биеийн бүтцийг дангаараа бүрэн илэрхийлэхгүй.";
+  }
+
+  $("bmiStatus").textContent = label;
+  $("bmiStatus").style.color = color;
+  $("bmiStatus").style.background = color + "18";
+  $("waterLiters").textContent = numberFormat(water / 1000);
+  $("waterGoal").textContent = numberFormat(water) + " мл";
+  $("calories").textContent = Math.round(weight * 5000 * 0.0005);
+  $("stepValue").textContent = numberFormat(steps);
+  $("distance").textContent = numberFormat(steps * 0.7 / 1000);
+  $("stepCalories").textContent = Math.round(calories);
+
+  waterDrunk = Math.min(waterDrunk, water);
+  updateWater();
+}
+
+function updateWater() {
+  const weight = Number($("weight").value);
+  const goal = weight > 0 ? weight * 30 : 0;
+  const percent = goal ? Math.round(waterDrunk / goal * 100) : 0;
+  $("waterDrunk").textContent = numberFormat(waterDrunk);
+  $("waterProgress").style.width = Math.min(100, percent) + "%";
+  $("waterPercent").textContent = percent + "% биелсэн";
+}
+
+function addWater(amount) {
+  const weight = Number($("weight").value);
+  if (weight <= 0) return;
+  waterDrunk = Math.min(weight * 30, waterDrunk + amount);
+  updateWater();
+}
+
+function resetWater() {
+  waterDrunk = 0;
+  updateWater();
+}
+
+["age","height","weight","gender","steps"].forEach(id => {
+  $(id).addEventListener("input", updateHealth);
+  $(id).addEventListener("change", updateHealth);
+});
+
+document.querySelectorAll(".nav button").forEach(button => {
+  button.addEventListener("click", () => {
+    document.querySelectorAll(".nav button").forEach(b => b.classList.remove("active"));
+    button.classList.add("active");
+    const tab = button.dataset.tab;
+    const targets = {
+      overview: "top",
+      nutrition: "nutritionSection",
+      exercise: "exerciseSection",
+      vitamins: "vitaminsSection",
+      hydration: "hydrationSection"
+    };
+    $(targets[tab]).scrollIntoView({behavior:"smooth",block:"start"});
+    $("pageTitle").textContent = button.textContent.trim();
+  });
+});
+
+document.querySelectorAll(".mobile-nav button").forEach(button => {
+  button.addEventListener("click", () => {
+    document.querySelectorAll(".mobile-nav button").forEach(b => b.classList.remove("active"));
+    button.classList.add("active");
+    $(button.dataset.jump).scrollIntoView({behavior:"smooth",block:"start"});
+  });
+});
+
+updateHealth();
+</script>
+</body>
+</html>
+
